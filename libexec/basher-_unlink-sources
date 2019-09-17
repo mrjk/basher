@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+package="$1"
+
+if [ ! -e "$BASHER_PACKAGES_PATH/$package/package.sh" ]; then
+  exit
+fi
+
+shopt -s nullglob
+
+sh_shells=($BASHER_PACKAGES_PATH/$package/shells/*.sh)
+bash_shells=($BASHER_PACKAGES_PATH/$package/shells/*.bash)
+zsh_shells=($BASHER_PACKAGES_PATH/$package/shells/*.zsh)
+sh_shells=("${sh_shells[@]##*/}")
+bash_shells=("${bash_shells[@]##*/}")
+zsh_shells=("${zsh_shells[@]##*/}")
+
+
+for _shell in "${sh_shells[@]}"
+do
+  rm -f "$BASHER_PREFIX/shells/sh/${_shell##*/}"
+done
+
+for _shell in "${bash_shells[@]}"
+do
+  rm -f "$BASHER_PREFIX/shells/bash/${_shell##*/}"
+done
+
+for _shell in "${zsh_shells[@]}"
+do
+  rm -f "$BASHER_PREFIX/shells/zsh/${_shell##*/}"
+done
+

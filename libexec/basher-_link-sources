@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -e
+
+package="$1"
+
+shopt -s nullglob
+
+sh_shells=($BASHER_PACKAGES_PATH/$package/shells/*.sh)
+bash_shells=($BASHER_PACKAGES_PATH/$package/shells/*.bash)
+zsh_shells=($BASHER_PACKAGES_PATH/$package/shells/*.zsh)
+sh_shells=("${sh_shells[@]##*/}")
+bash_shells=("${bash_shells[@]##*/}")
+zsh_shells=("${zsh_shells[@]##*/}")
+
+for _shell in "${sh_shells[@]}"
+do
+  mkdir -p "$BASHER_PREFIX/shells/sh"
+  ln -sf "$BASHER_PACKAGES_PATH/$package/shells/$_shell" "$BASHER_PREFIX/shells/sh/${_shell##*/}"
+done
+
+for _shell in "${bash_shells[@]}"
+do
+  mkdir -p "$BASHER_PREFIX/shells/bash"
+  ln -sf "$BASHER_PACKAGES_PATH/$package/shells/$_shell" "$BASHER_PREFIX/shells/bash/${_shell##*/}"
+done
+
+for _shell in "${zsh_shells[@]}"
+do
+  mkdir -p "$BASHER_PREFIX/shells/zsh"
+  ln -sf "$target" "$BASHER_PREFIX/shells/zsh/${_shell##*/}"
+done
+
+>&2 echo "INFO: Linked shells for $package"

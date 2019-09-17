@@ -1,12 +1,38 @@
 #!/usr/bin/env bash
 #
 # Summary: List all available commands for a package
-# Usage: basher _commands <package>
+# Usage: basher _commands [-a|-all] [-s|--summary] [-u|--usage] <package>
 #
 # Looks for executable files prefixed with package- and
 # display each suffix as an available command.
 
 set -e
+
+usage="false"
+summary="false"
+all="false"
+
+while [ ! -z "$1" ]; do
+  case $1 in
+    --all|-a)
+      all="true"
+      shift 1
+      continue
+    ;;
+    --usage|-u)
+      usage="true"
+      shift 1
+      continue
+    ;;
+    --summary|-s)
+      summary="true"
+      shift 1
+      continue
+    ;;
+    *) break ;;
+  esac
+done
+
 
 if [ "$#" -ne 1 ]; then
   basher-help _commands
@@ -21,9 +47,19 @@ shopt -s nullglob
 
 { for path in "${paths[@]}"; do
     for command in "${path}/$package-"*; do
+      command_path="$command"
       command="${command##*$package-}"
-      if [[ ! "$command" == _* ]]; then
-        echo ${command}
+      if [[ ! "$command" == _* && ! -z "$command" ]]; then
+
+        if [ "$all" == "true" ]; then
+          printf "%-20s|%-60s|%s\n" "${command}" "$(sed -E '/^# Usage:/!d;s/#\s+Usage:\s+//' $command_path)" "$(sed -E '/^# Summary:/!d;s/#\s+Summary:\s+//' $command_path)" 
+        elif [ "$usage" == "true" ]; then
+          printf "%-20s%-80s\n" "${command}" "$(sed -E '/^# Usage:/!d;s/#\s+Usage:\s+//' $command_path)"
+        elif [ "$summary" == "true" ]; then
+          printf "%-20s%-80s\n" "${command}" "$(sed -E '/^# Summary:/!d;s/#\s+Summary:\s+//' $command_path)"
+        else
+          echo "${command}"
+        fi
       fi
     done
   done

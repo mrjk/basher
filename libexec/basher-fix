@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# Summary: Clean all dead links in BASHER_PREFIX
+# Usage: basher fix
+
+
+set -e
+
+find ${BASHER_PREFIX} -type l -xtype l | xargs -n 1 echo rm

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
 # Summary: List all available basher commands
-# Usage: basher commands
+# Usage: basher commands [--all|--summary|--usage] <package>
+
 
 set -e
 
-basher-_commands basher
+basher-_commands ${@-} basher

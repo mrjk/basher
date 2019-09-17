@@ -18,8 +18,8 @@ print_fish_commands() {
   echo "set -gx BASHER_PREFIX $BASHER_PREFIX"
   echo "set -gx BASHER_PACKAGES_PATH $BASHER_PACKAGES_PATH"
 
-  echo 'if not contains $BASHER_ROOT/cellar/bin $PATH'
-  echo 'set -gx PATH $BASHER_ROOT/cellar/bin $PATH'
+  echo 'if not contains $BASHER_PREFIX/bin $PATH'
+  echo 'set -gx PATH $BASHER_PREFIX/bin $PATH'
   echo 'end'
 }
 
@@ -29,16 +29,27 @@ print_sh_commands(){
   echo "export BASHER_PREFIX=$BASHER_PREFIX"
   echo "export BASHER_PACKAGES_PATH=$BASHER_PACKAGES_PATH"
 
-  echo 'export PATH="$BASHER_ROOT/cellar/bin:$PATH"'
+  echo 'export PATH="$BASHER_PREFIX/bin:$PATH"'
+}
+
+load_sh_package_shells() {
+  mkdir -p "$BASHER_PREFIX/shells/sh"
+  echo 'for f in $(command ls "$BASHER_PREFIX/shells/sh"); do source "$BASHER_PREFIX/shells/sh/$f"; done'
 }
 
 load_bash_package_completions() {
-  echo 'for f in $(command ls "$BASHER_ROOT/cellar/completions/bash"); do source "$BASHER_ROOT/cellar/completions/bash/$f"; done'
+  mkdir -p "$BASHER_PREFIX/completions/bash"
+  echo 'for f in $(command ls "$BASHER_PREFIX/completions/bash"); do source "$BASHER_PREFIX/completions/bash/$f"; done'
+}
+load_bash_package_shells() {
+  mkdir -p "$BASHER_PREFIX/shells/bash"
+  echo 'for f in $(command ls "$BASHER_PREFIX/shells/bash"); do source "$BASHER_PREFIX/shells/bash/$f"; done'
 }
 
 load_zsh_package_completions() {
-  echo 'fpath=("$BASHER_ROOT/cellar/completions/zsh/compsys" $fpath)'
-  echo 'for f in $(command ls "$BASHER_ROOT/cellar/completions/zsh/compctl"); do source "$BASHER_ROOT/cellar/completions/zsh/compctl/$f"; done'
+  mkdir -p "$BASHER_PREFIX/completions/zsh/compsys"
+  echo 'fpath=("$BASHER_PREFIX/completions/zsh/compsys" $fpath)'
+  echo 'for f in $(command ls "$BASHER_PREFIX/completions/zsh/compctl"); do source "$BASHER_PREFIX/completions/zsh/compctl/$f"; done'
 }
 
 case "$shell" in
@@ -47,6 +58,7 @@ case "$shell" in
     ;;
   * )
     print_sh_commands
+    load_sh_package_shells
     ;;
 esac
 
@@ -60,6 +72,8 @@ fi
 
 case "$shell" in
   bash )
+    load_sh_package_shells
+    load_bash_package_shells
     load_bash_package_completions
     ;;
   zsh )

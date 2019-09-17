@@ -50,6 +50,11 @@ export BASHER_INSTALL_MAN
 bin_path="$(abs_dirname "$0")"
 export PATH="${bin_path}:${PATH}"
 
+if [ "$1" == "--complete" ]; then
+  exec basher-commands
+  exit
+fi
+
 command="$1"
 case "$command" in
 "")

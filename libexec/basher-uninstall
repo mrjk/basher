@@ -4,6 +4,8 @@
 
 set -e
 
+force=false
+
 if [ "$#" -ne 1 ]; then
   basher-help uninstall
   exit 1
@@ -44,4 +46,15 @@ basher-_unlink-man "$package"
 basher-_unlink-bins "$package"
 basher-_unlink-completions "$package"
 
-rm -rf "${BASHER_PACKAGES_PATH}/$package"
+
+pkg_path="${BASHER_PACKAGES_PATH}/$package"
+git_remotes=$(git -C "$pkg_path" remote -v 2>/dev/null || true)
+if [ -z "$git_remotes" ]; then
+  echo "INFO: No git remotes detected, leaving dir as is: $pkg_path"
+else
+  echo RUN: rm -rf "$pkg_path"
+  #if [ "$force" == "true" ]; then
+  #fi
+fi
+
+

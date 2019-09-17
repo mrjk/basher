@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Summary: Installs a local directory as a basher package
-# Usage: basher link [--no-deps] [--force] <directory> <package>
+# Usage: basher link [--no-deps] [--update] <directory> <package>
 
 set -e
 
@@ -12,18 +12,24 @@ resolve_link() {
   fi
 }
 
+no_sources="false"
 no_deps="false"
-force="false"
+update="false"
 
 while [ ! -z "$1" ]; do
   case $1 in
+    --no-sources)
+      no_sources="true"
+      shift 1
+      continue
+    ;;
     --no-deps)
       no_deps="true"
       shift 1
       continue
     ;;
-    --force)
-      force="true"
+    --update)
+      update="true"
       shift 1
       continue
     ;;
@@ -61,8 +67,8 @@ if [ -z "$name" ]; then
   exit 1
 fi
 
-if [[ -d "${BASHER_PACKAGES_PATH}/$package" && "$force" == "false" ]] ; then
-  echo "Package '$package' is already present, use '--force' otherwise"
+if [[ -d "${BASHER_PACKAGES_PATH}/$package" && "$update" == "false" ]] ; then
+  echo "Package '$package' is already present, use '--update' otherwise"
   exit 1
 fi
 
@@ -74,7 +80,7 @@ fi
 # Resolve local package path
 directory="$(resolve_link "$directory")"
 
-ln -frs "$directory" "${BASHER_PACKAGES_PATH}/$package"
+ln -irs "$directory" "${BASHER_PACKAGES_PATH}/$package"
 
 basher-_link-bins "$package"
 basher-_link-completions "$package"
@@ -82,4 +88,7 @@ basher-_link-man "$package"
 
 if [ "$no_deps" = "false" ]; then
   basher-_deps "$package"
+fi
+if [ "$no_sources" = "false" ]; then
+  basher-_link-sources "$package"
 fi

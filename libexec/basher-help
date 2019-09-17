@@ -146,6 +146,11 @@ if [ -z "$1" ] || [ "$1" == "basher" ]; then
   echo
   echo "Some useful basher commands are:"
   print_summaries help commands init new-command
+
+  echo ""
+  echo "Available commands:"
+  basher-commands | sed 's/^/   /'
+
   echo
   echo "See 'basher help <command>' for information on a specific command."
 else
