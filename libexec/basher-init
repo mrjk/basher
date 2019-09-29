@@ -29,7 +29,8 @@ print_sh_commands(){
   echo "export BASHER_PREFIX=$BASHER_PREFIX"
   echo "export BASHER_PACKAGES_PATH=$BASHER_PACKAGES_PATH"
 
-  echo 'export PATH="$BASHER_PREFIX/bin:$PATH"'
+  echo '[[ ":$PATH:" != *":$BASHER_PREFIX/bin:"* ]] && export PATH="$BASHER_PREFIX/bin:$PATH"'
+
 }
 
 load_sh_package_shells() {
@@ -72,7 +73,6 @@ fi
 
 case "$shell" in
   bash )
-    load_sh_package_shells
     load_bash_package_shells
     load_bash_package_completions
     ;;
